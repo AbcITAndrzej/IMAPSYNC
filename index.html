@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>IMAPSync - Synchronizacja poczty</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="lang-switch">
+        <select id="lang-select">
+            <option value="pl">🇵🇱 Polski</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="fr">🇫🇷 Français</option>
+        </select>
+    </div>
+    <h1 data-lang="title">IMAPSync - Synchronizacja poczty</h1>
+
+    <form id="sync-form" method="post" action="sync.php">
+        <fieldset>
+            <legend data-lang="source">Konto źródłowe (IMAP)</legend>
+            <input type="text" name="user1" placeholder="Login" required>
+            <input type="password" name="password1" placeholder="Hasło" required>
+            <input type="text" name="host1" placeholder="Serwer IMAP" required>
+        </fieldset>
+
+        <fieldset>
+            <legend data-lang="destination">Konto docelowe (IMAP)</legend>
+            <input type="text" name="user2" placeholder="Login" required>
+            <input type="password" name="password2" placeholder="Hasło" required>
+            <input type="text" name="host2" placeholder="Serwer IMAP" required>
+        </fieldset>
+
+        <fieldset>
+            <legend data-lang="options">Opcje</legend>
+            <label><input type="checkbox" name="justlogin"> <span data-lang="justlogin">Tylko logowanie</span></label>
+            <label><input type="checkbox" name="justfoldersizes"> <span data-lang="justfoldersizes">Tylko rozmiary folderów</span></label>
+            <label><input type="checkbox" name="justfolders"> <span data-lang="justfolders">Tylko foldery</span></label>
+            <label><input type="checkbox" name="dry"> <span data-lang="dry">Symulacja (dry run)</span></label>
+        </fieldset>
+
+        <button type="submit" data-lang="start">Rozpocznij synchronizację</button>
+    </form>
+</div>
+
+<script>
+const translations = {
+    pl: {
+        title: "IMAPSync - Synchronizacja poczty",
+        source: "Konto źródłowe (IMAP)",
+        destination: "Konto docelowe (IMAP)",
+        options: "Opcje",
+        justlogin: "Tylko logowanie",
+        justfoldersizes: "Tylko rozmiary folderów",
+        justfolders: "Tylko foldery",
+        dry: "Symulacja (dry run)",
+        start: "Rozpocznij synchronizację"
+    },
+    en: {
+        title: "IMAPSync - Mail Synchronization",
+        source: "Source account (IMAP)",
+        destination: "Destination account (IMAP)",
+        options: "Options",
+        justlogin: "Just login",
+        justfoldersizes: "Just folder sizes",
+        justfolders: "Just folders",
+        dry: "Dry run",
+        start: "Start Sync"
+    },
+    de: {
+        title: "IMAPSync - Mail-Synchronisation",
+        source: "Quellkonto (IMAP)",
+        destination: "Zielkonto (IMAP)",
+        options: "Optionen",
+        justlogin: "Nur Anmeldung",
+        justfoldersizes: "Nur Ordnergrößen",
+        justfolders: "Nur Ordner",
+        dry: "Testlauf",
+        start: "Synchronisation starten"
+    },
+    fr: {
+        title: "IMAPSync - Synchronisation de courrier",
+        source: "Compte source (IMAP)",
+        destination: "Compte de destination (IMAP)",
+        options: "Options",
+        justlogin: "Connexion uniquement",
+        justfoldersizes: "Taille des dossiers uniquement",
+        justfolders: "Dossiers uniquement",
+        dry: "Exécution à blanc",
+        start: "Démarrer la synchronisation"
+    }
+};
+
+function setLanguage(lang) {
+    localStorage.setItem("lang", lang);
+    $("[data-lang]").each(function () {
+        const key = $(this).data("lang");
+        $(this).text(translations[lang][key]);
+    });
+    $("#lang-select").val(lang);
+}
+
+$(function () {
+    const lang = localStorage.getItem("lang") || "pl";
+    setLanguage(lang);
+
+    $("#lang-select").on("change", function () {
+        setLanguage($(this).val());
+    });
+});
+</script>
+</body>
+</html>
