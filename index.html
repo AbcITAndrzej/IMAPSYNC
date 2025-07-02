@@ -56,50 +56,7 @@
 </div>
 
 <script>
-const translations = {
-    pl: {
-        title: "IMAPSync - Synchronizacja poczty",
-        source: "Konto źródłowe (IMAP)",
-        destination: "Konto docelowe (IMAP)",
-        options: "Opcje",
-        justlogin: "Tylko logowanie",
-        justfoldersizes: "Tylko rozmiary folderów",
-        justfolders: "Tylko foldery",
-        dry: "Symulacja (dry run)",
-        start: "Rozpocznij synchronizację"
-    },
-    en: {
-        title: "IMAPSync - Mail Synchronization",
-        source: "Source account (IMAP)",
-        destination: "Destination account (IMAP)",
-        options: "Options",
-        justlogin: "Just login",
-        justfoldersizes: "Just folder sizes",
-        justfolders: "Just folders",
-        dry: "Dry run",
-        start: "Start Sync"
-    },
-    de: {
-        title: "IMAPSync - Mail-Synchronisation",
-        source: "Quellkonto (IMAP)",
-        destination: "Zielkonto (IMAP)",
-        options: "Optionen",
-        justlogin: "Nur Anmeldung",
-        justfoldersizes: "Nur Ordnergrößen",
-        justfolders: "Nur Ordner",
-        dry: "Testlauf",
-        start: "Synchronisation starten"
-    },
-    fr: {
-        title: "IMAPSync - Synchronisation de courrier",
-        source: "Compte source (IMAP)",
-        destination: "Compte de destination (IMAP)",
-        options: "Options",
-        justlogin: "Connexion uniquement",
-        justfoldersizes: "Taille des dossiers uniquement",
-        justfolders: "Dossiers uniquement",
-        dry: "Exécution à blanc",
-        start: "Démarrer la synchronisation"
+
 const translations = {};
 
 function setCookie(name, value, days) {
@@ -118,18 +75,14 @@ function loadLanguage(lang) {
         applyTranslations(lang);
         return;
     }
-};
+
     $.getJSON('lang/' + lang + '.json', function (data) {
         translations[lang] = data;
         applyTranslations(lang);
     });
 }
 
-function setLanguage(lang) {
-    localStorage.setItem("lang", lang);
-    $("[data-lang]").each(function () {
-        const key = $(this).data("lang");
-        $(this).text(translations[lang][key]);
+
 function applyTranslations(lang) {
     setCookie('lang', lang, 30);
     $('[data-lang]').each(function () {
@@ -144,13 +97,12 @@ function applyTranslations(lang) {
             $(this).attr('placeholder', translations[lang][key]);
         }
     });
-    $("#lang-select").val(lang);
+
     $('#lang-select').val(lang);
 }
 
 $(function () {
-    const lang = localStorage.getItem("lang") || "pl";
-    setLanguage(lang);
+
     const lang = getCookie('lang') || 'pl';
     loadLanguage(lang);
 
@@ -173,8 +125,7 @@ $(function () {
         $('input[name=password2]').val(p1);
     });
 
-    $("#lang-select").on("change", function () {
-        setLanguage($(this).val());
+
     $('#toggle-advanced').on('click', function () {
         $('#advanced').toggle();
     });
