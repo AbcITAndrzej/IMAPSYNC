@@ -20,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_POST['move'])) $cmd .= " --move";
     $cmd .= " --ssl1 --ssl2 --syncinternaldates";
 
+
     $descriptor = [1 => ['pipe','w'], 2 => ['pipe','w']];
     $process = proc_open($cmd, $descriptor, $pipes);
     $output = stream_get_contents($pipes[1]);

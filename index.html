@@ -56,6 +56,7 @@
 </div>
 
 <script>
+
 const translations = {};
 
 function setCookie(name, value, days) {
@@ -74,11 +75,13 @@ function loadLanguage(lang) {
         applyTranslations(lang);
         return;
     }
+
     $.getJSON('lang/' + lang + '.json', function (data) {
         translations[lang] = data;
         applyTranslations(lang);
     });
 }
+
 
 function applyTranslations(lang) {
     setCookie('lang', lang, 30);
@@ -94,10 +97,12 @@ function applyTranslations(lang) {
             $(this).attr('placeholder', translations[lang][key]);
         }
     });
+
     $('#lang-select').val(lang);
 }
 
 $(function () {
+
     const lang = getCookie('lang') || 'pl';
     loadLanguage(lang);
 
@@ -119,6 +124,7 @@ $(function () {
         $('input[name=user2]').val(u1);
         $('input[name=password2]').val(p1);
     });
+
 
     $('#toggle-advanced').on('click', function () {
         $('#advanced').toggle();
