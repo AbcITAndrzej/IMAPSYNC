@@ -1,0 +1,16 @@
+{
+  "title": "IMAPSync - Synchronisation de courrier",
+  "source": "Compte source (IMAP)",
+  "destination": "Compte de destination (IMAP)",
+  "options": "Options",
+  "justlogin": "Connexion uniquement",
+  "justfoldersizes": "Taille des dossiers uniquement",
+  "justfolders": "Dossiers uniquement",
+  "dry": "Exécution à blanc",
+  "start": "Démarrer la synchronisation",
+  "advanced": "Paramètres supplémentaires",
+  "subfolder": "Sous-dossier",
+  "strict": "Synchronisation stricte",
+  "move": "Déplacer la synchronisation",
+  "swap": "Permuter source et destination"
+}

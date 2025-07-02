@@ -1,0 +1,16 @@
+{
+  "title": "IMAPSync - Mail-Synchronisation",
+  "source": "Quellkonto (IMAP)",
+  "destination": "Zielkonto (IMAP)",
+  "options": "Optionen",
+  "justlogin": "Nur Anmeldung",
+  "justfoldersizes": "Nur Ordnergrößen",
+  "justfolders": "Nur Ordner",
+  "dry": "Testlauf",
+  "start": "Synchronisation starten",
+  "advanced": "Zusätzliche Parameter",
+  "subfolder": "Unterordner",
+  "strict": "Strikte Synchronisation",
+  "move": "Verschieben Synchronisation",
+  "swap": "Quelle und Ziel tauschen"
+}

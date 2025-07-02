@@ -1,0 +1,16 @@
+{
+  "title": "IMAPSync - Synchronizacja poczty",
+  "source": "Konto źródłowe (IMAP)",
+  "destination": "Konto docelowe (IMAP)",
+  "options": "Opcje",
+  "justlogin": "Tylko logowanie",
+  "justfoldersizes": "Tylko rozmiary folderów",
+  "justfolders": "Tylko foldery",
+  "dry": "Symulacja (dry run)",
+  "start": "Rozpocznij synchronizację",
+  "advanced": "Dodatkowe parametry",
+  "subfolder": "Podfolder",
+  "strict": "Ścisła synchronizacja",
+  "move": "Przenieś synchronizację",
+  "swap": "Zamień źródło z docelowym"
+}
