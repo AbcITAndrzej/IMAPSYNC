@@ -1,189 +1,184 @@
-diff --git a/index.html b/index.html
-index b8db57296ff4449d043fc9b3a9d407a087f181ee..5ee313a28ddd6c446f5dcbd11f7df71805a84a66 100644
---- a/index.html
-+++ b/index.html
-@@ -1,116 +1,129 @@
- <!DOCTYPE html>
- <html lang="pl">
- <head>
-     <meta charset="UTF-8">
-     <title>IMAPSync - Synchronizacja poczty</title>
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <link rel="stylesheet" href="css/style.css">
-+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@6/css/flag-icons.min.css">
-     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
- </head>
- <body>
- <div class="container">
-     <div class="lang-switch">
-         <select id="lang-select">
-             <option value="pl">🇵🇱 Polski</option>
-             <option value="en">🇬🇧 English</option>
-             <option value="de">🇩🇪 Deutsch</option>
-             <option value="fr">🇫🇷 Français</option>
-         </select>
-     </div>
-     <h1 data-lang="title">IMAPSync - Synchronizacja poczty</h1>
- 
-     <form id="sync-form" method="post" action="sync.php">
-         <fieldset>
-             <legend data-lang="source">Konto źródłowe (IMAP)</legend>
-             <input type="text" name="user1" placeholder="Login" required>
-             <input type="password" name="password1" placeholder="Hasło" required>
-             <input type="text" name="host1" placeholder="Serwer IMAP" required>
-         </fieldset>
- 
-         <fieldset>
-             <legend data-lang="destination">Konto docelowe (IMAP)</legend>
-             <input type="text" name="user2" placeholder="Login" required>
-             <input type="password" name="password2" placeholder="Hasło" required>
-             <input type="text" name="host2" placeholder="Serwer IMAP" required>
-         </fieldset>
-+        <button type="button" id="swap-btn" data-lang="swap">Zamień źródło z docelowym</button>
- 
-         <fieldset>
-             <legend data-lang="options">Opcje</legend>
-             <label><input type="checkbox" name="justlogin"> <span data-lang="justlogin">Tylko logowanie</span></label>
-             <label><input type="checkbox" name="justfoldersizes"> <span data-lang="justfoldersizes">Tylko rozmiary folderów</span></label>
-             <label><input type="checkbox" name="justfolders"> <span data-lang="justfolders">Tylko foldery</span></label>
-             <label><input type="checkbox" name="dry"> <span data-lang="dry">Symulacja (dry run)</span></label>
-         </fieldset>
- 
-+        <button type="button" id="toggle-advanced" data-lang="advanced">Dodatkowe parametry</button>
-+        <div id="advanced" class="advanced-section">
-+            <input type="text" name="subfolder" placeholder="Subfolder" data-placeholder="subfolder">
-+            <label><input type="checkbox" name="delete2"> <span data-lang="strict">Ścisła synchronizacja</span></label>
-+            <label><input type="checkbox" name="move"> <span data-lang="move">Przenieś synchronizację</span></label>
-+        </div>
-+
-         <button type="submit" data-lang="start">Rozpocznij synchronizację</button>
-     </form>
- </div>
- 
- <script>
--const translations = {
--    pl: {
--        title: "IMAPSync - Synchronizacja poczty",
--        source: "Konto źródłowe (IMAP)",
--        destination: "Konto docelowe (IMAP)",
--        options: "Opcje",
--        justlogin: "Tylko logowanie",
--        justfoldersizes: "Tylko rozmiary folderów",
--        justfolders: "Tylko foldery",
--        dry: "Symulacja (dry run)",
--        start: "Rozpocznij synchronizację"
--    },
--    en: {
--        title: "IMAPSync - Mail Synchronization",
--        source: "Source account (IMAP)",
--        destination: "Destination account (IMAP)",
--        options: "Options",
--        justlogin: "Just login",
--        justfoldersizes: "Just folder sizes",
--        justfolders: "Just folders",
--        dry: "Dry run",
--        start: "Start Sync"
--    },
--    de: {
--        title: "IMAPSync - Mail-Synchronisation",
--        source: "Quellkonto (IMAP)",
--        destination: "Zielkonto (IMAP)",
--        options: "Optionen",
--        justlogin: "Nur Anmeldung",
--        justfoldersizes: "Nur Ordnergrößen",
--        justfolders: "Nur Ordner",
--        dry: "Testlauf",
--        start: "Synchronisation starten"
--    },
--    fr: {
--        title: "IMAPSync - Synchronisation de courrier",
--        source: "Compte source (IMAP)",
--        destination: "Compte de destination (IMAP)",
--        options: "Options",
--        justlogin: "Connexion uniquement",
--        justfoldersizes: "Taille des dossiers uniquement",
--        justfolders: "Dossiers uniquement",
--        dry: "Exécution à blanc",
--        start: "Démarrer la synchronisation"
-+const translations = {};
-+
-+function setCookie(name, value, days) {
-+    const d = new Date();
-+    d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
-+    document.cookie = name + "=" + value + ";path=/;expires=" + d.toUTCString();
-+}
-+
-+function getCookie(name) {
-+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-+    return match ? match[2] : null;
-+}
-+
-+function loadLanguage(lang) {
-+    if (translations[lang]) {
-+        applyTranslations(lang);
-+        return;
-     }
--};
-+    $.getJSON('lang/' + lang + '.json', function (data) {
-+        translations[lang] = data;
-+        applyTranslations(lang);
-+    });
-+}
- 
--function setLanguage(lang) {
--    localStorage.setItem("lang", lang);
--    $("[data-lang]").each(function () {
--        const key = $(this).data("lang");
--        $(this).text(translations[lang][key]);
-+function applyTranslations(lang) {
-+    setCookie('lang', lang, 30);
-+    $('[data-lang]').each(function () {
-+        const key = $(this).data('lang');
-+        if (translations[lang][key]) {
-+            $(this).text(translations[lang][key]);
-+        }
-+    });
-+    $('[data-placeholder]').each(function () {
-+        const key = $(this).data('placeholder');
-+        if (translations[lang][key]) {
-+            $(this).attr('placeholder', translations[lang][key]);
-+        }
-     });
--    $("#lang-select").val(lang);
-+    $('#lang-select').val(lang);
- }
- 
- $(function () {
--    const lang = localStorage.getItem("lang") || "pl";
--    setLanguage(lang);
-+    const lang = getCookie('lang') || 'pl';
-+    loadLanguage(lang);
-+
-+    $('#lang-select').on('change', function () {
-+        loadLanguage($(this).val());
-+    });
-+
-+    $('#swap-btn').on('click', function () {
-+        const h1 = $('input[name=host1]').val();
-+        const u1 = $('input[name=user1]').val();
-+        const p1 = $('input[name=password1]').val();
-+        const h2 = $('input[name=host2]').val();
-+        const u2 = $('input[name=user2]').val();
-+        const p2 = $('input[name=password2]').val();
-+        $('input[name=host1]').val(h2);
-+        $('input[name=user1]').val(u2);
-+        $('input[name=password1]').val(p2);
-+        $('input[name=host2]').val(h1);
-+        $('input[name=user2]').val(u1);
-+        $('input[name=password2]').val(p1);
-+    });
- 
--    $("#lang-select").on("change", function () {
--        setLanguage($(this).val());
-+    $('#toggle-advanced').on('click', function () {
-+        $('#advanced').toggle();
-     });
- });
- </script>
- </body>
- </html>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>IMAPSync - Synchronizacja poczty</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@6/css/flag-icons.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="lang-switch">
+        <select id="lang-select">
+            <option value="pl">🇵🇱 Polski</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="de">🇩🇪 Deutsch</option>
+            <option value="fr">🇫🇷 Français</option>
+        </select>
+    </div>
+    <h1 data-lang="title">IMAPSync - Synchronizacja poczty</h1>
+
+    <form id="sync-form" method="post" action="sync.php">
+        <fieldset>
+            <legend data-lang="source">Konto źródłowe (IMAP)</legend>
+            <input type="text" name="user1" placeholder="Login" required>
+            <input type="password" name="password1" placeholder="Hasło" required>
+            <input type="text" name="host1" placeholder="Serwer IMAP" required>
+        </fieldset>
+
+        <fieldset>
+            <legend data-lang="destination">Konto docelowe (IMAP)</legend>
+            <input type="text" name="user2" placeholder="Login" required>
+            <input type="password" name="password2" placeholder="Hasło" required>
+            <input type="text" name="host2" placeholder="Serwer IMAP" required>
+        </fieldset>
+        <button type="button" id="swap-btn" data-lang="swap">Zamień źródło z docelowym</button>
+
+        <fieldset>
+            <legend data-lang="options">Opcje</legend>
+            <label><input type="checkbox" name="justlogin"> <span data-lang="justlogin">Tylko logowanie</span></label>
+            <label><input type="checkbox" name="justfoldersizes"> <span data-lang="justfoldersizes">Tylko rozmiary folderów</span></label>
+            <label><input type="checkbox" name="justfolders"> <span data-lang="justfolders">Tylko foldery</span></label>
+            <label><input type="checkbox" name="dry"> <span data-lang="dry">Symulacja (dry run)</span></label>
+        </fieldset>
+
+        <button type="button" id="toggle-advanced" data-lang="advanced">Dodatkowe parametry</button>
+        <div id="advanced" class="advanced-section">
+            <input type="text" name="subfolder" placeholder="Subfolder" data-placeholder="subfolder">
+            <label><input type="checkbox" name="delete2"> <span data-lang="strict">Ścisła synchronizacja</span></label>
+            <label><input type="checkbox" name="move"> <span data-lang="move">Przenieś synchronizację</span></label>
+        </div>
+
+        <button type="submit" data-lang="start">Rozpocznij synchronizację</button>
+    </form>
+</div>
+
+<script>
+const translations = {
+    pl: {
+        title: "IMAPSync - Synchronizacja poczty",
+        source: "Konto źródłowe (IMAP)",
+        destination: "Konto docelowe (IMAP)",
+        options: "Opcje",
+        justlogin: "Tylko logowanie",
+        justfoldersizes: "Tylko rozmiary folderów",
+        justfolders: "Tylko foldery",
+        dry: "Symulacja (dry run)",
+        start: "Rozpocznij synchronizację"
+    },
+    en: {
+        title: "IMAPSync - Mail Synchronization",
+        source: "Source account (IMAP)",
+        destination: "Destination account (IMAP)",
+        options: "Options",
+        justlogin: "Just login",
+        justfoldersizes: "Just folder sizes",
+        justfolders: "Just folders",
+        dry: "Dry run",
+        start: "Start Sync"
+    },
+    de: {
+        title: "IMAPSync - Mail-Synchronisation",
+        source: "Quellkonto (IMAP)",
+        destination: "Zielkonto (IMAP)",
+        options: "Optionen",
+        justlogin: "Nur Anmeldung",
+        justfoldersizes: "Nur Ordnergrößen",
+        justfolders: "Nur Ordner",
+        dry: "Testlauf",
+        start: "Synchronisation starten"
+    },
+    fr: {
+        title: "IMAPSync - Synchronisation de courrier",
+        source: "Compte source (IMAP)",
+        destination: "Compte de destination (IMAP)",
+        options: "Options",
+        justlogin: "Connexion uniquement",
+        justfoldersizes: "Taille des dossiers uniquement",
+        justfolders: "Dossiers uniquement",
+        dry: "Exécution à blanc",
+        start: "Démarrer la synchronisation"
+const translations = {};
+
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = name + "=" + value + ";path=/;expires=" + d.toUTCString();
+}
+
+function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
+}
+
+function loadLanguage(lang) {
+    if (translations[lang]) {
+        applyTranslations(lang);
+        return;
+    }
+};
+    $.getJSON('lang/' + lang + '.json', function (data) {
+        translations[lang] = data;
+        applyTranslations(lang);
+    });
+}
+
+function setLanguage(lang) {
+    localStorage.setItem("lang", lang);
+    $("[data-lang]").each(function () {
+        const key = $(this).data("lang");
+        $(this).text(translations[lang][key]);
+function applyTranslations(lang) {
+    setCookie('lang', lang, 30);
+    $('[data-lang]').each(function () {
+        const key = $(this).data('lang');
+        if (translations[lang][key]) {
+            $(this).text(translations[lang][key]);
+        }
+    });
+    $('[data-placeholder]').each(function () {
+        const key = $(this).data('placeholder');
+        if (translations[lang][key]) {
+            $(this).attr('placeholder', translations[lang][key]);
+        }
+    });
+    $("#lang-select").val(lang);
+    $('#lang-select').val(lang);
+}
+
+$(function () {
+    const lang = localStorage.getItem("lang") || "pl";
+    setLanguage(lang);
+    const lang = getCookie('lang') || 'pl';
+    loadLanguage(lang);
+
+    $('#lang-select').on('change', function () {
+        loadLanguage($(this).val());
+    });
+
+    $('#swap-btn').on('click', function () {
+        const h1 = $('input[name=host1]').val();
+        const u1 = $('input[name=user1]').val();
+        const p1 = $('input[name=password1]').val();
+        const h2 = $('input[name=host2]').val();
+        const u2 = $('input[name=user2]').val();
+        const p2 = $('input[name=password2]').val();
+        $('input[name=host1]').val(h2);
+        $('input[name=user1]').val(u2);
+        $('input[name=password1]').val(p2);
+        $('input[name=host2]').val(h1);
+        $('input[name=user2]').val(u1);
+        $('input[name=password2]').val(p1);
+    });
+
+    $("#lang-select").on("change", function () {
+        setLanguage($(this).val());
+    $('#toggle-advanced').on('click', function () {
+        $('#advanced').toggle();
+    });
+});
+</script>
+</body>
+</html>
